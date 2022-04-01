@@ -1,5 +1,3 @@
-package tomek.it.graphics;
-
 import javax.swing.JFrame;
 
 public class G0 {
