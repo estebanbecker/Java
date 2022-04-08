@@ -4,16 +4,111 @@ import java.awt.BorderLayout;
 import java.awt.*;
 import javax.swing.*;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 public class App {
 
     public static void createAndShowGUI() {
-        JFrame jf = new JFrame("My First Frame");
+        JFrame jf = new JFrame("Calculator");
 
         //Create a graphical user interface (GUI) for a calculator
-        
-        JTextField jtf = new JTextField();
+
+        JTextField jtf = new JTextField("0");
+        jtf.setHorizontalAlignment(JTextField.RIGHT);
+        jtf.setEditable(false);
         jf.getContentPane().add(jtf,BorderLayout.NORTH);
+
+        //Create action listener
+        ActionListener myActionListener = new ActionListener() {
+    		public void actionPerformed(ActionEvent e) {
+                switch (e.getActionCommand()) {
+                    case "+":
+                        if(secondNumber != 0) {
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            secondNumber = 0;
+                        }
+                        operation = "+";
+                        pressedNumber = false;
+                        jtf.setText("+");
+                        break;
+                    case "-":
+                        if(secondNumber != 0) {
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            secondNumber = 0;
+                        }
+                        operation = "-";
+                        pressedNumber = false;
+                        jtf.setText("-");
+                        break;
+                    case "*":
+                        if(secondNumber != 0) {
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            secondNumber = 0;
+                        }
+                        operation = "*";
+                        pressedNumber = false;
+                        jtf.setText("*");
+                        break;
+                    case "/":
+                        if(secondNumber != 0) {
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            secondNumber = 0;
+                        }
+                        operation = "/";
+                        jtf.setText("/");
+                        pressedNumber = false;
+                        break;
+                    case "=":
+                        result = MakeOperation(firstNumber,secondNumber, operation);
+                        jtf.setText(String.valueOf(result));
+                        secondNumber = result;
+                        break;
+                    case "C":
+                        firstNumber = 0;
+                        secondNumber = 0;
+                        result = 0;
+                        operation = "";
+                        pressedNumber = true;
+                        jtf.setText(String.valueOf(firstNumber));
+                        break;
+                    default:
+                        if (pressedNumber == true) {
+                            firstNumber = firstNumber * 10 + Integer.parseInt(e.getActionCommand());
+                        }else{
+                            secondNumber = firstNumber;
+                            firstNumber = Integer.parseInt(e.getActionCommand());
+                            pressedNumber = true;
+                        }
+                        jtf.setText(String.valueOf(firstNumber));
+                        break;
+                }
+    		}
+            private String operation = "";
+            private int firstNumber=0;
+            private int secondNumber=0;
+            private boolean pressedNumber=true;
+            private int result=0;
+            
+
+            private int MakeOperation (int firstNumber, int secondNumber, String operation) {
+                switch (operation) {
+                    case "+":
+                        return firstNumber + secondNumber;
+                    case "-":
+                        return secondNumber - firstNumber;
+                    case "*":
+                        return firstNumber * secondNumber;
+                    case "/":
+                        return secondNumber / firstNumber;
+                    default:
+                        return 0;
+                }
+            }
+    	};
+
+
 
         //Create a GridLayout manager with four rows and four columns
         GridLayout grid = new GridLayout(4,4);
@@ -21,41 +116,14 @@ public class App {
 
 
         //Create buttons
-        JButton button1 = new JButton("1");
-        JButton button2 = new JButton("2");
-        JButton button3 = new JButton("3");
-        JButton button4 = new JButton("4");
-        JButton button5 = new JButton("5");
-        JButton button6 = new JButton("6");
-        JButton button7 = new JButton("7");
-        JButton button8 = new JButton("8");
-        JButton button9 = new JButton("9");
-        JButton button0 = new JButton("0");
-        JButton buttonAdd = new JButton("+");
-        JButton buttonSub = new JButton("-");
-        JButton buttonMul = new JButton("*");
-        JButton buttonDiv = new JButton("/");
-        JButton buttonEql = new JButton("=");
-        JButton buttonClr = new JButton("C");
+        String list_button[] = {"1","2","3","+","4","5","6","-","7","8","9","*","0","=","/","C"};
 
-        //Add buttons to the panel
-        jp.add(button1);
-        jp.add(button2);
-        jp.add(button3);
-        jp.add(buttonAdd);
-        jp.add(button4);
-        jp.add(button5);
-        jp.add(button6);
-        jp.add(buttonSub);
-        jp.add(button7);
-        jp.add(button8);
-        jp.add(button9);
-        jp.add(buttonMul);
-        jp.add(buttonClr);
-        jp.add(button0);
-        jp.add(buttonEql);
-        jp.add(buttonDiv);
-
+        for (int i = 0; i < list_button.length; i++) {
+            JButton jb = new JButton(list_button[i]);
+            jb.addActionListener(myActionListener);
+            jp.add(jb);
+        }
+        
         //Add panel to the frame
         jf.getContentPane().add(jp,BorderLayout.CENTER);
 
