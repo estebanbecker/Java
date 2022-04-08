@@ -25,45 +25,71 @@ public class App {
     		public void actionPerformed(ActionEvent e) {
                 switch (e.getActionCommand()) {
                     case "+":
+                        if(pressedEqual) {
+                            firstNumber = result;
+                            pressedEqual = false;
+                        }
                         if(secondNumber != 0) {
                             firstNumber = MakeOperation(firstNumber, secondNumber, operation);
                             secondNumber = 0;
                         }
                         operation = "+";
                         pressedNumber = false;
-                        jtf.setText("+");
+                        jtf.setText(String.valueOf(firstNumber));
                         break;
                     case "-":
+                        if(pressedEqual) {
+                            firstNumber = result;
+                            pressedEqual = false;
+                        }
                         if(secondNumber != 0) {
                             firstNumber = MakeOperation(firstNumber, secondNumber, operation);
                             secondNumber = 0;
                         }
                         operation = "-";
                         pressedNumber = false;
-                        jtf.setText("-");
+                        jtf.setText(String.valueOf(firstNumber));
                         break;
                     case "*":
+                        if(pressedEqual) {
+                            firstNumber = result;
+                            pressedEqual = false;
+                        }
                         if(secondNumber != 0) {
                             firstNumber = MakeOperation(firstNumber, secondNumber, operation);
                             secondNumber = 0;
                         }
                         operation = "*";
                         pressedNumber = false;
-                        jtf.setText("*");
+                        jtf.setText(String.valueOf(firstNumber));
                         break;
                     case "/":
+                        if(pressedEqual) {
+                            firstNumber = result;
+                            pressedEqual = false;
+                        }
                         if(secondNumber != 0) {
                             firstNumber = MakeOperation(firstNumber, secondNumber, operation);
                             secondNumber = 0;
                         }
                         operation = "/";
-                        jtf.setText("/");
+                        jtf.setText(String.valueOf(firstNumber));
                         pressedNumber = false;
                         break;
                     case "=":
-                        result = MakeOperation(firstNumber,secondNumber, operation);
+                        if(pressedNumber == false){
+                            secondNumber = firstNumber;
+                            pressedNumber = true;
+                        }
+                        if(pressedEqual == false) {
+                            result = MakeOperation(firstNumber, secondNumber, operation);
+                            pressedEqual = true;
+                        }else{
+                            result = MakeOperation(firstNumber,result , operation);
+                        }
                         jtf.setText(String.valueOf(result));
-                        secondNumber = result;
+                        secondNumber = 0;
+
                         break;
                     case "C":
                         firstNumber = 0;
@@ -71,9 +97,20 @@ public class App {
                         result = 0;
                         operation = "";
                         pressedNumber = true;
+                        pressedEqual = false;
                         jtf.setText(String.valueOf(firstNumber));
                         break;
                     default:
+                        if(pressedEqual) {
+                            firstNumber = 0;
+                            secondNumber = 0;
+                            result = 0;
+                            operation = "";
+                            pressedNumber = true;
+                            pressedEqual = false;
+                            jtf.setText(String.valueOf(firstNumber));
+                        }
+                        
                         if (pressedNumber == true) {
                             firstNumber = firstNumber * 10 + Integer.parseInt(e.getActionCommand());
                         }else{
@@ -81,6 +118,7 @@ public class App {
                             firstNumber = Integer.parseInt(e.getActionCommand());
                             pressedNumber = true;
                         }
+                        pressedEqual = false;
                         jtf.setText(String.valueOf(firstNumber));
                         break;
                 }
@@ -89,6 +127,7 @@ public class App {
             private int firstNumber=0;
             private int secondNumber=0;
             private boolean pressedNumber=true;
+            private boolean pressedEqual=false;
             private int result=0;
             
 
@@ -101,7 +140,7 @@ public class App {
                     case "*":
                         return firstNumber * secondNumber;
                     case "/":
-                        return secondNumber / firstNumber;
+                        return (int)(secondNumber / firstNumber);
                     default:
                         return 0;
                 }
