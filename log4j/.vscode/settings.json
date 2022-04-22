@@ -1,0 +1,9 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-api-2.17.2.jar",
+        "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-core-2.17.2.jar"
+    ]
+}
