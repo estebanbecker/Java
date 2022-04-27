@@ -36,6 +36,7 @@ public class App {
                         operation = "+";
                         pressedNumber = false;
                         jtf.setText(String.valueOf(firstNumber));
+                        NoOperation = false;
                         break;
                     case "-":
                         if(pressedEqual) {
@@ -49,6 +50,7 @@ public class App {
                         operation = "-";
                         pressedNumber = false;
                         jtf.setText(String.valueOf(firstNumber));
+                        NoOperation = false;
                         break;
                     case "*":
                         if(pressedEqual) {
@@ -62,6 +64,7 @@ public class App {
                         operation = "*";
                         pressedNumber = false;
                         jtf.setText(String.valueOf(firstNumber));
+                        NoOperation = false;
                         break;
                     case "/":
                         if(pressedEqual) {
@@ -75,19 +78,24 @@ public class App {
                         operation = "/";
                         jtf.setText(String.valueOf(firstNumber));
                         pressedNumber = false;
+                        NoOperation = false;
                         break;
                     case "=":
                         if(pressedNumber == false){
                             secondNumber = firstNumber;
                             pressedNumber = true;
                         }
-                        if(pressedEqual == false) {
+                        if(NoOperation == true) {
+                            jtf.setText(String.valueOf(firstNumber));
+                        }
+                        else if(pressedEqual == false) {
                             result = MakeOperation(firstNumber, secondNumber, operation);
+                            jtf.setText(String.valueOf(result));
                             pressedEqual = true;
                         }else{
                             result = MakeOperation(firstNumber,result , operation);
+                            jtf.setText(String.valueOf(result));
                         }
-                        jtf.setText(String.valueOf(result));
                         secondNumber = 0;
 
                         break;
@@ -98,6 +106,7 @@ public class App {
                         operation = "";
                         pressedNumber = true;
                         pressedEqual = false;
+                        NoOperation = true;
                         jtf.setText(String.valueOf(firstNumber));
                         break;
                     default:
@@ -129,6 +138,7 @@ public class App {
             private boolean pressedNumber=true;
             private boolean pressedEqual=false;
             private int result=0;
+            private boolean NoOperation = true;
             
 
             private int MakeOperation (int firstNumber, int secondNumber, String operation) {
