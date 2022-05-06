@@ -30,13 +30,15 @@ public class App {
                             pressedEqual = false;
                         }
                         if(secondNumber != 0) {
-                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation, false);
                             secondNumber = 0;
                         }
                         operation = "+";
                         pressedNumber = false;
                         jtf.setText(String.valueOf(firstNumber));
                         NoOperation = false;
+                        pressedOperator = true;
+                        pressedEqual2 = false;
                         break;
                     case "-":
                         if(pressedEqual) {
@@ -44,13 +46,15 @@ public class App {
                             pressedEqual = false;
                         }
                         if(secondNumber != 0) {
-                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation, false);
                             secondNumber = 0;
                         }
                         operation = "-";
                         pressedNumber = false;
                         jtf.setText(String.valueOf(firstNumber));
                         NoOperation = false;
+                        pressedOperator = true;
+                        pressedEqual2 = false;
                         break;
                     case "*":
                         if(pressedEqual) {
@@ -58,13 +62,15 @@ public class App {
                             pressedEqual = false;
                         }
                         if(secondNumber != 0) {
-                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation, false);
                             secondNumber = 0;
                         }
                         operation = "*";
                         pressedNumber = false;
                         jtf.setText(String.valueOf(firstNumber));
                         NoOperation = false;
+                        pressedOperator = true;
+                        pressedEqual2 = false;
                         break;
                     case "/":
                         if(pressedEqual) {
@@ -72,13 +78,15 @@ public class App {
                             pressedEqual = false;
                         }
                         if(secondNumber != 0) {
-                            firstNumber = MakeOperation(firstNumber, secondNumber, operation);
+                            firstNumber = MakeOperation(firstNumber, secondNumber, operation, false);
                             secondNumber = 0;
                         }
                         operation = "/";
                         jtf.setText(String.valueOf(firstNumber));
                         pressedNumber = false;
                         NoOperation = false;
+                        pressedOperator = true;
+                        pressedEqual2 = false;
                         break;
                     case "=":
                         if(pressedNumber == false){
@@ -87,16 +95,31 @@ public class App {
                         }
                         if(NoOperation == true) {
                             jtf.setText(String.valueOf(firstNumber));
+                            pressedNumber = false;
                         }
-                        else if(pressedEqual == false) {
-                            result = MakeOperation(firstNumber, secondNumber, operation);
+                        else if(pressedOperator == true){
+                            result = MakeOperation(firstNumber,secondNumber , operation, true);
                             jtf.setText(String.valueOf(result));
                             pressedEqual = true;
-                        }else{
-                            result = MakeOperation(firstNumber,result , operation);
+                            pressedNumber = false;
+                        }
+                        else if(pressedEqual == false) {
+                            result = MakeOperation(firstNumber, secondNumber, operation, false);
+                            if(operation == "-" && secondNumber == 0) {
+                                firstNumber = -firstNumber;
+                            }
                             jtf.setText(String.valueOf(result));
+                            pressedEqual = true;
+                            pressedNumber = false;
+                        }else{
+                            result = MakeOperation(firstNumber,result , operation, true);
+                            jtf.setText(String.valueOf(result));
+                            pressedNumber = false;
+                            pressedEqual = true;
                         }
                         secondNumber = 0;
+                        pressedOperator = false;
+                        pressedEqual2 = true;
 
                         break;
                     case "C":
@@ -105,30 +128,47 @@ public class App {
                         result = 0;
                         operation = "";
                         pressedNumber = true;
+                        pressedEqual2 = false;
                         pressedEqual = false;
                         NoOperation = true;
+                        pressedOperator = false;
                         jtf.setText(String.valueOf(firstNumber));
                         break;
                     default:
-                        if(pressedEqual) {
+                        if(pressedEqual2) {
                             firstNumber = 0;
                             secondNumber = 0;
                             result = 0;
                             operation = "";
                             pressedNumber = true;
+                            pressedEqual2 = false;
                             pressedEqual = false;
+                            NoOperation = true;
+                            pressedOperator = false;
                             jtf.setText(String.valueOf(firstNumber));
                         }
                         
                         if (pressedNumber == true) {
-                            firstNumber = firstNumber * 10 + Integer.parseInt(e.getActionCommand());
+                            if(operation == "-" && secondNumber == 0) {
+                                firstNumber = firstNumber * -10 - Integer.parseInt(e.getActionCommand());
+                            }else{
+                                firstNumber = firstNumber * 10 + Integer.parseInt(e.getActionCommand());
+                            }
+                            
                         }else{
                             secondNumber = firstNumber;
-                            firstNumber = Integer.parseInt(e.getActionCommand());
                             pressedNumber = true;
+                            if(operation == "-" && secondNumber == 0) {
+                                firstNumber = -Integer.parseInt(e.getActionCommand());
+                            }else{
+                                firstNumber = Integer.parseInt(e.getActionCommand());
+                            }
                         }
                         pressedEqual = false;
+                        pressedEqual2 = false;
+                        pressedOperator = false;
                         jtf.setText(String.valueOf(firstNumber));
+                        
                         break;
                 }
     		}
@@ -139,9 +179,15 @@ public class App {
             private boolean pressedEqual=false;
             private int result=0;
             private boolean NoOperation = true;
+            private boolean pressedOperator = false;
+            private boolean pressedEqual2 = false;
+
             
 
-            private int MakeOperation (int firstNumber, int secondNumber, String operation) {
+            private int MakeOperation (int firstNumber, int secondNumber, String operation, Boolean repeat) {
+                if(operation == "-" && secondNumber == 0 && firstNumber < 0 && repeat == false) {
+                    return firstNumber;
+                }
                 switch (operation) {
                     case "+":
                         return firstNumber + secondNumber;
