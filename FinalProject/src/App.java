@@ -4,20 +4,15 @@ import javax.swing.*;
 import javax.imageio.ImageIO;
 
 import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,16 +28,18 @@ public class App {
     static JTextField textField = new JTextField(20);
     static JButton button = new JButton("Search");
 
+    //Add a card layout manager to the frame
+    static CardLayout cardLayout = new CardLayout();
+    static JPanel cards = new JPanel(cardLayout);
+    
+
     public static void main(String[] args) throws Exception {
         ExecutorService pool = Executors.newFixedThreadPool(5);
         
         GridLayout grid = new GridLayout(1, 3);
         JPanel panel = new JPanel(grid);
 
-        JLabel label = new JLabel("Enter movie name:");
-
-
-        
+        JLabel label = new JLabel("Enter movie name:");        
 
         //Create ActionListener
         ActionListener listener = new ActionListener() {
@@ -64,6 +61,8 @@ public class App {
 
         frame.getContentPane().add(BorderLayout.NORTH, panel);
         
+        frame.getContentPane().add(cards,   BorderLayout.CENTER);
+            
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -96,14 +95,18 @@ class Task implements Runnable {
 
             GridLayout grid2 = new GridLayout(movieresults.size(), 1);
             JPanel panel2 = new JPanel(grid2);
+            panel2.removeAll();
             
             URL urlimage = null;
             Image image = null;
+            GridLayout gridmovie = new GridLayout(0, 4);
+            JPanel panelmovie = new JPanel(gridmovie);
             for (Element movieresult : movieresults) {
                 Movie m = new Movie();
 
-                GridLayout gridmovie = new GridLayout(1, 4);
-                JPanel panelmovie = new JPanel(gridmovie);
+                gridmovie = new GridLayout(0, 4);
+                panelmovie = new JPanel(gridmovie);
+                panelmovie.removeAll();
 
                 m.setName(movieresult.getElementsByClass("result").text());
                 m.setReleaseDate(movieresult.getElementsByClass("release_date").text());
@@ -140,7 +143,7 @@ class Task implements Runnable {
 
                 JLabel labelmovie = new JLabel(m.getName());
                 panelmovie.add(labelmovie);
-                if(m.getReleaseDate() != null){
+                if(m.getReleaseDate() != ""){
                     JLabel labelreleasedate = new JLabel(m.getReleaseDate());
                     panelmovie.add(labelreleasedate);
                 }else{
@@ -153,7 +156,11 @@ class Task implements Runnable {
                 panel2.add(panelmovie);
             }
 
-            App.frame.getContentPane().add(BorderLayout.CENTER, panel2);
+            App.cards.removeAll();
+            App.cards.add(panel2, "movie");
+            App.cards.revalidate();
+            App.cards.repaint();
+
             App.frame.pack();
             App.frame.setVisible(true);
 
