@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,12 +15,15 @@ public class App {
     public static void main(String[] args) throws Exception {
         Scanner myObj = new Scanner(System.in);
 
-        System.out.println("Enter a movie name:");
+        JFrame frame = new JFrame("TMDB");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Label label = new Label("Enter a movie title:");
+        TextField textField = new TextField();
 
         String name = myObj.nextLine();
 
         String url = "https://www.themoviedb.org/search/movie?language=en&query=" + name;
-        System.out.println(url);
 
         try{
             Document doc = Jsoup.connect(url).get();
@@ -29,7 +35,6 @@ public class App {
         Document doc = Jsoup.connect(url).get();
         
         Elements movieresults = doc.getElementsByClass("card v4 tight");
-        System.out.println(movieresults);
 
         List movieList = new ArrayList<Movie>();
         
