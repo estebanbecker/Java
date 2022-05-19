@@ -32,6 +32,10 @@ public class App {
     static CardLayout cardLayout = new CardLayout();
     static JPanel cards = new JPanel(cardLayout);
     
+    static int p = 0;
+
+    static Elements movieresults;
+    static JButton button2 = new JButton("Next");
 
     public static void main(String[] args) throws Exception {
         ExecutorService pool = Executors.newFixedThreadPool(5);
@@ -41,19 +45,30 @@ public class App {
 
         JLabel label = new JLabel("Enter movie name:");        
 
+        button2.setVisible(false);
         //Create ActionListener
         ActionListener listener = new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 button.setText("Searching...");
-                pool.submit(new Task());            
+                pool.submit(new Task());      
+            }
+
+        };
+        ActionListener listener2 = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                button.setText("Searching...");
+                pool.submit(new Task2());
             }
 
         };
 
         textField.addActionListener(listener);
         button.addActionListener(listener);
+        button2.addActionListener(listener2);
 
         panel.add(label);
         panel.add(textField);
@@ -62,6 +77,7 @@ public class App {
         frame.getContentPane().add(BorderLayout.NORTH, panel);
         
         frame.getContentPane().add(cards,   BorderLayout.CENTER);
+        frame.getContentPane().add(button2, BorderLayout.SOUTH);
             
         frame.pack();
         frame.setVisible(true);
@@ -70,15 +86,123 @@ public class App {
 
         }
 
+      
+
+
+public static void show_data(int page){
+    int min=page*5;
+    int max=min+5;
+    int rows;
+        if (App.movieresults.size() > max ) {
+            rows = 5;
+        }else{
+            rows = App.movieresults.size()-min;
+        }
+
+        GridLayout grid2 = new GridLayout(rows, 1);
+        JPanel panel2 = new JPanel(grid2);
+        panel2.removeAll();
         
+        URL urlimage = null;
+        Image image = null;
+        GridLayout gridmovie = new GridLayout(0, 4);
+        JPanel panelmovie = new JPanel(gridmovie);
+        
+        int i=min;
+
+        while(App.movieresults.size() > i & i < max){
+
+            Element movieresult = App.movieresults.get(i);
+
+            Movie m = new Movie();
+
+            gridmovie = new GridLayout(0, 4);
+            panelmovie = new JPanel(gridmovie);
+            panelmovie.removeAll();
+
+            m.setName(movieresult.getElementsByClass("result").text());
+            m.setReleaseDate(movieresult.getElementsByClass("release_date").text());
+            m.setDescription(movieresult.getElementsByClass("overview").text());
+            m.setImage(movieresult.getElementsByClass("poster").attr("src"));
+            m.setUrl(movieresult.getElementsByClass("result").attr("href"));
+
+            System.out.println(m.getName());
+
+        
+            try{
+                
+                urlimage = new URL("https://www.themoviedb.org"+m.getImage());
+                //urlimage =new URL("https://www.themoviedb.org/t/p/w94_and_h141_bestv2/x2kzCjYqAPkqLSbv29fBQKE33Fl.jpg");
+                System.out.println(urlimage);
+                image = ImageIO.read(urlimage);
+                if(image != null){
+                    JLabel label = new JLabel(new ImageIcon(image));
+                    panelmovie.add(label);
+                }else{
+                    JLabel label = new JLabel("No image");
+                    panelmovie.add(label);
+                }
+            } catch (MalformedURLException ex) {
+                System.out.println("Malformed URL");
+            } catch (IOException iox) {
+                System.out.println("Can not load file");
+            }
+            
+            
+
+            JLabel labelmovie = new JLabel(m.getName());
+            panelmovie.add(labelmovie);
+            if(m.getReleaseDate() != ""){
+                JLabel labelreleasedate = new JLabel(m.getReleaseDate());
+                panelmovie.add(labelreleasedate);
+            }else{
+                JLabel labelreleasedate = new JLabel("No release date");
+                panelmovie.add(labelreleasedate);
+            }
+            JLabel labeldescription = new JLabel("<html>"+m.getDescription()+"</html>");
+            panelmovie.add(labeldescription);
+            
+            panel2.add(panelmovie);
+
+            i++;
+
+            
+        }
+
+        
+
+        if(App.movieresults.size() == 0){
+            JLabel label = new JLabel("No results");
+            panel2.add(label);
+        }
+        
+        App.cards.removeAll();
+        App.cards.add(panel2, "movie");
+        App.cards.revalidate();
+        App.cards.repaint();
+
+        App.frame.pack();
+        App.frame.setVisible(true);
+
+        App.button.setText("Search");
+
+        if(App.movieresults.size() > max){
+            App.button2.setVisible(true);
+        }else{
+            App.button2.setVisible(false);
+        }
+
+    }
+
 }
 class Task implements Runnable {
 
-    private static int number;
+    private static int liczba;
 	int l;
 	public Task() {
-		l=++number;
+		l=++liczba;
 	}
+   
     public void run() {
         String name = App.textField.getText();
         String url = "https://www.themoviedb.org/search/movie?language=en&query=" + name;
@@ -91,84 +215,27 @@ class Task implements Runnable {
                 System.exit(0);
             }
             
-            Elements movieresults = doc.getElementsByClass("card v4 tight");
-
-            GridLayout grid2 = new GridLayout(movieresults.size(), 1);
-            JPanel panel2 = new JPanel(grid2);
-            panel2.removeAll();
+            App.movieresults = doc.getElementsByClass("card v4 tight");
             
-            URL urlimage = null;
-            Image image = null;
-            GridLayout gridmovie = new GridLayout(0, 4);
-            JPanel panelmovie = new JPanel(gridmovie);
-            for (Element movieresult : movieresults) {
-                Movie m = new Movie();
-
-                gridmovie = new GridLayout(0, 4);
-                panelmovie = new JPanel(gridmovie);
-                panelmovie.removeAll();
-
-                m.setName(movieresult.getElementsByClass("result").text());
-                m.setReleaseDate(movieresult.getElementsByClass("release_date").text());
-                m.setDescription(movieresult.getElementsByClass("overview").text());
-                m.setImage(movieresult.getElementsByClass("poster").attr("src"));
-                m.setUrl(movieresult.getElementsByClass("result").attr("href"));
-
-                System.out.println(m.getName());
-                System.out.println(m.getReleaseDate());
-                System.out.println(m.getDescription());
-                System.out.println(m.getImage());
-                System.out.println(m.getUrl());
-
-                try{
-                    
-                    urlimage = new URL("https://www.themoviedb.org"+m.getImage());
-                    //urlimage =new URL("https://www.themoviedb.org/t/p/w94_and_h141_bestv2/x2kzCjYqAPkqLSbv29fBQKE33Fl.jpg");
-                    System.out.println(urlimage);
-                    image = ImageIO.read(urlimage);
-                    if(image != null){
-                        JLabel label = new JLabel(new ImageIcon(image));
-                        panelmovie.add(label);
-                    }else{
-                        JLabel label = new JLabel("No image");
-                        panelmovie.add(label);
-                    }
-                } catch (MalformedURLException ex) {
-                    System.out.println("Malformed URL");
-                } catch (IOException iox) {
-                    System.out.println("Can not load file");
-                }
-                
-                
-
-                JLabel labelmovie = new JLabel(m.getName());
-                panelmovie.add(labelmovie);
-                if(m.getReleaseDate() != ""){
-                    JLabel labelreleasedate = new JLabel(m.getReleaseDate());
-                    panelmovie.add(labelreleasedate);
-                }else{
-                    JLabel labelreleasedate = new JLabel("No release date");
-                    panelmovie.add(labelreleasedate);
-                }
-                JLabel labeldescription = new JLabel("<html>"+m.getDescription()+"</html>");
-                panelmovie.add(labeldescription);
-                
-                panel2.add(panelmovie);
-            }
-
-            App.cards.removeAll();
-            App.cards.add(panel2, "movie");
-            App.cards.revalidate();
-            App.cards.repaint();
-
-            App.frame.pack();
-            App.frame.setVisible(true);
-
-            App.button.setText("Search");
+            App.show_data(0);
+            App.p = 0;
     }
 }
 
+class Task2 implements Runnable {
 
+    private static int liczba;
+	int l;
+	public Task2() {
+		l=++liczba;
+	}
+
+    public void run() {
+        App.p++;
+        App.show_data(App.p);
+    }
+    
+}
 
 class Movie {
     private String name;
