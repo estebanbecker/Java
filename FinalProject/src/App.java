@@ -205,6 +205,7 @@ class Task implements Runnable {
    
     public void run() {
         String name = App.textField.getText();
+        System.out.println("Searching for: " + name);
         String url = "https://www.themoviedb.org/search/movie?language=en&query=" + name;
             Document doc = null;
             try{
