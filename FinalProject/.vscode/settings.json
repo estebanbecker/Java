@@ -1,8 +1,30 @@
 {
-    "java.project.sourcePaths": ["src"],
+    "java.project.sourcePaths": [
+        "src"
+    ],
     "java.project.outputPath": "bin",
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\jsoup-1.15.1.jar"
-    ]
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\jsoup-1.15.1.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-core-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-api-2.17.2.jar"
+        ],
+        "exclude": [
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-liquibase-2.17.2-javadoc.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-liquibase-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-mongodb3-2.17.2-javadoc.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-mongodb3-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-mongodb4-2.17.2-javadoc.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-mongodb4-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-slf4j-impl-2.17.2-javadoc.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-slf4j-impl-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-slf4j18-impl-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-spring-boot-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-spring-cloud-config-client-2.17.2-javadoc.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-spring-cloud-config-client-2.17.2.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-taglib-2.17.2-javadoc.jar",
+            "c:\\Users\\esteb\\OneDrive - Universite De Technologie De Belfort-Montbeliard\\Progamation\\Java\\lib\\apache-log4j-2.17.2-bin\\log4j-taglib-2.17.2.jar"
+        ]
+    }
 }

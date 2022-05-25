@@ -1,3 +1,8 @@
+import org.apache.logging.log4j.*;
+import java.util.*;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -11,8 +16,6 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.Timestamp;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class App {
+    static final Logger logger = LogManager.getLogger(App.class);
 
     static JFrame frame = new JFrame("TMDB");
     
@@ -69,6 +73,7 @@ public class App {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                logger.info("Search button clicked "+ textField.getText());
                 button.setText("Searching...");
                 pool.submit(new Task());      
             }
@@ -108,6 +113,7 @@ public class App {
                         }
                         break;
                 }
+                logger.info("Sorting button clicked "+ sorting_option);
                 pool.submit(new Task2());
             }
 
@@ -155,7 +161,7 @@ class Task implements Runnable {
             try{
                 doc = Jsoup.connect(url).get();
             } catch ( IOException ex) {
-                System.out.println("Error: " + ex.getMessage());
+                App.logger.error("Error connecting to the website");
                 //Quit
                 System.exit(0);
             }
@@ -212,9 +218,13 @@ class Task implements Runnable {
                             panel2.add(label);
                         }
                     } catch (MalformedURLException ex) {
-                        System.out.println("Malformed URL");
-                    } catch (IOException iox) {
-                        System.out.println("Can not load file");
+                        App.logger.error("Error connecting to the website");
+                        //Quit
+                        System.exit(0);
+                    } catch (IOException ex) {
+                        App.logger.error("Error connecting to the website");
+                        //Quit
+                        System.exit(0);
                     }
                     
                     
@@ -417,8 +427,6 @@ class Movie {
 
     public String getTimeStamp() {
         //convert string to date, "June 28, 2022" to 2022-06-28
-        System.out.println(getName());
-        System.out.println(getReleaseDate());
         if(getReleaseDate() == ""){
             return "99999999";
         }else{
