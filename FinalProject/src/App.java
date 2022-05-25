@@ -11,12 +11,17 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,7 +45,9 @@ public class App {
 
     static Elements movieresults;
 
-    static String sorting_option = new String("popularity.desc");
+    static String sorting_option = new String();
+
+    static ArrayList<Movie> movies = new ArrayList<Movie>();
 
     public static void main(String[] args) throws Exception {
         ExecutorService pool = Executors.newFixedThreadPool(5);
@@ -48,6 +55,8 @@ public class App {
         buttonsort1.setVisible(false);
         buttonsort2.setVisible(false);
         buttonsort3.setVisible(false);
+
+        sorting_option = "popularity.desc";
 
         GridLayout grid = new GridLayout(2, 3);
         JPanel panel = new JPanel(grid);
@@ -75,33 +84,27 @@ public class App {
                         
                         if(sorting_option == "popularity.desc"){
                             sorting_option = "popularity.asc";
-                            buttonsort1.setText("Sort by Popularity (asc)");
                         }
                         else{
                             sorting_option = "popularity.desc";
-                            buttonsort1.setText("Sort by Popularity (desc)");
                         }
                         break;
                     case "Sort by Date":
                         
-                        if(sorting_option == "release_date.desc"){
-                            sorting_option = "release_date.asc";
-                            buttonsort2.setText("Sort by Date (asc)");
+                        if(sorting_option == "release_date.asc"){
+                            sorting_option = "release_date.desc";
                         }
                         else{
-                            sorting_option = "release_date.desc";
-                            buttonsort2.setText("Sort by Date (desc)");
+                            sorting_option = "release_date.asc";
                         }
                         break;
                     case "Sort by Name":
                         
-                        if(sorting_option == "original_title.desc"){
-                            sorting_option = "original_title.asc";
-                            buttonsort3.setText("Sort by Name (asc)");
+                        if(sorting_option == "original_title.asc"){
+                            sorting_option = "original_title.desc";
                         }
                         else{
-                            sorting_option = "original_title.desc";
-                            buttonsort3.setText("Sort by Name (desc)");
+                            sorting_option = "original_title.asc";
                         }
                         break;
                 }
@@ -136,6 +139,7 @@ public class App {
         }
 
     }
+
 class Task implements Runnable {
 
     private static int liczba;
@@ -173,12 +177,9 @@ class Task implements Runnable {
                // GridLayout gridmovie = new GridLayout(0, 4);
                 //JPanel panelmovie = new JPanel(gridmovie);
                 
-                int i=0;
-        
-                while(App.movieresults.size() > i){
-        
-                    Element movieresult = App.movieresults.get(i);
-        
+                App.movies.clear();
+
+                for (Element movieresult : App.movieresults) {
                     Movie m = new Movie();
         
                     m.setName(movieresult.getElementsByClass("result").text());
@@ -186,16 +187,23 @@ class Task implements Runnable {
                     m.setDescription(movieresult.getElementsByClass("overview").text());
                     m.setImage(movieresult.getElementsByClass("poster").attr("src"));
                     m.setUrl(movieresult.getElementsByClass("result").attr("href"));
+                    App.movies.add(m);
+                }
+
+                int i=0;
         
-                    System.out.println(m.getName());
-        
+                while(App.movieresults.size() > i){
+                    
+
+                    Movie m=App.movies.get(i);
                 
                     try{
                         
                         urlimage = new URL("https://www.themoviedb.org"+m.getImage());
                         
-                        System.out.println(urlimage);
+                    
                         image = ImageIO.read(urlimage);
+                        m.setrImage(image);
                         if(image != null){
                             JLabel label = new JLabel(new ImageIcon(image));
                             panel2.add(label);
@@ -222,10 +230,6 @@ class Task implements Runnable {
                     }
                     JLabel labeldescription = new JLabel("<html>"+m.getDescription()+"</html>");
                     panel2.add(labeldescription);
-                    
-                    App.buttonsort1.setVisible(true);
-                    App.buttonsort2.setVisible(true);
-                    App.buttonsort3.setVisible(true);
         
                     i++;
         
@@ -233,7 +237,12 @@ class Task implements Runnable {
                 }
         
                 
-        
+                
+                    
+                App.buttonsort1.setVisible(true);
+                App.buttonsort2.setVisible(true);
+                App.buttonsort3.setVisible(true);
+
                 if(App.movieresults.size() == 0){
                     JLabel label = new JLabel("No results");
                     panel2.add(label);
@@ -264,7 +273,7 @@ class Task2 implements Runnable {
 		l=++liczba;
 	}
 
-    public void run(String sort_option) {
+    public void run() {
         
         GridLayout grid2 = new GridLayout(App.movieresults.size(), 4);
         JPanel panel2 = new JPanel(grid2);
@@ -275,47 +284,40 @@ class Task2 implements Runnable {
         
         panel2.removeAll();
         
-        URL urlimage = null;
-        Image image = null;
-       // GridLayout gridmovie = new GridLayout(0, 4);
-        //JPanel panelmovie = new JPanel(gridmovie);
-        
         int i=0;
 
+        //Create a copy of movies
+        ArrayList<Movie> movies = new ArrayList<Movie>(App.movies);
+
+
+        //Sort movies by name
+        if (App.sorting_option == "original_title.desc") {
+            movies.sort(Comparator.comparing(Movie::getName).reversed());
+        } else if (App.sorting_option == "original_title.asc") {
+            movies.sort(Comparator.comparing(Movie::getName));
+        } else if (App.sorting_option == "release_date.desc") {
+            movies.sort(Comparator.comparing(Movie::getTimeStamp).reversed());
+        } else if (App.sorting_option == "release_date.asc") {
+            movies.sort(Comparator.comparing(Movie::getTimeStamp));
+        } else if (App.sorting_option == "popularity.asc"){
+            //reverse the list
+            Collections.reverse(movies);
+
+        }
         while(App.movieresults.size() > i){
 
-            Element movieresult = App.movieresults.get(i);
 
             Movie m = new Movie();
-
-            m.setName(movieresult.getElementsByClass("result").text());
-            m.setReleaseDate(movieresult.getElementsByClass("release_date").text());
-            m.setDescription(movieresult.getElementsByClass("overview").text());
-            m.setImage(movieresult.getElementsByClass("poster").attr("src"));
-            m.setUrl(movieresult.getElementsByClass("result").attr("href"));
-
-            System.out.println(m.getName());
+            m = movies.get(i);
 
         
-            try{
-                
-                urlimage = new URL("https://www.themoviedb.org"+m.getImage());
-                
-                System.out.println(urlimage);
-                image = ImageIO.read(urlimage);
-                if(image != null){
-                    JLabel label = new JLabel(new ImageIcon(image));
-                    panel2.add(label);
-                }else{
-                    JLabel label = new JLabel("No image");
-                    panel2.add(label);
-                }
-            } catch (MalformedURLException ex) {
-                System.out.println("Malformed URL");
-            } catch (IOException iox) {
-                System.out.println("Can not load file");
+            if(m.getrImage() != null){
+                JLabel label = new JLabel(new ImageIcon(m.getrImage()));
+                panel2.add(label);
+            }else{
+                JLabel label = new JLabel("No image");
+                panel2.add(label);
             }
-            
             
 
             JLabel labelmovie = new JLabel(m.getName());
@@ -329,24 +331,10 @@ class Task2 implements Runnable {
             }
             JLabel labeldescription = new JLabel("<html>"+m.getDescription()+"</html>");
             panel2.add(labeldescription);
-            
-            App.buttonsort1.setVisible(true);
-            App.buttonsort2.setVisible(true);
-            App.buttonsort3.setVisible(true);
 
             i++;
 
             
-        }
-
-        
-
-        if(App.movieresults.size() == 0){
-            JLabel label = new JLabel("No results");
-            panel2.add(label);
-            App.buttonsort1.setVisible(false);
-            App.buttonsort2.setVisible(false);
-            App.buttonsort3.setVisible(false);
         }
         
         App.cards.removeAll();
@@ -359,6 +347,7 @@ class Task2 implements Runnable {
 
         App.button.setText("Search");
     }
+
     
 }
 
@@ -368,6 +357,15 @@ class Movie {
     private String image;
     private String url;
     private String releaseDate;
+    private Image rimage;
+
+    public Image getrImage() {
+        return this.rimage;
+    }
+
+    public void setrImage(Image rimage) {
+        this.rimage = rimage;
+    }
 
     public Movie() {
         this.name = "";
@@ -415,6 +413,67 @@ class Movie {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public String getTimeStamp() {
+        //convert string to date, "June 28, 2022" to 2022-06-28
+        System.out.println(getName());
+        System.out.println(getReleaseDate());
+        if(getReleaseDate() != ""){
+            return "99999999";
+        }else{
+
+            String date = getReleaseDate();
+            String[] parts = date.split(" ");
+            String day = parts[1]; // day
+            day = day.split(",")[0];
+            String month = parts[0]; // month
+            String year = parts[2]; // year
+
+            switch(month){
+                case "January":
+                    month = "01";
+                    break;
+                case "February":
+                    month = "02";
+                    break;
+                case "March":
+                    month = "03";
+                    break;
+                case "April":
+                    month = "04";
+                    break;
+                case "May":
+                    month = "05";
+                    break;
+                case "June":
+                    month = "06";
+                    break;
+                case "July":
+                    month = "07";
+                    break;
+                case "August":
+                    month = "08";
+                    break;
+                case "September":
+                    month = "09";
+                    break;
+                case "October":
+                    month = "10";
+                    break;
+                case "November":
+                    month = "11";
+                    break;
+                case "December":
+                    month = "12";
+                    break;
+            }
+
+
+            String date_string = year+"-"+month+"-"+day;
+            return date_string;
+        
+        }
     }
 
 }
