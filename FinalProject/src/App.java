@@ -419,7 +419,7 @@ class Movie {
         //convert string to date, "June 28, 2022" to 2022-06-28
         System.out.println(getName());
         System.out.println(getReleaseDate());
-        if(getReleaseDate() != ""){
+        if(getReleaseDate() == ""){
             return "99999999";
         }else{
 
